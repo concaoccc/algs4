@@ -10,11 +10,14 @@ public class UF {
 	private int []id;
 	//节点的个数
 	private int count;
+	//节点所在根节点的数目
+	private int []sz;
 	//初始化一个有n个节点的
 	public UF(int n) {
 		// TODO Auto-generated constructor stub
 		count = n;
 		id = new int[n];
+		sz = new int[n];
 		for (int i = 0; i < n; i++) {
 			id[i] =i;
 		}
@@ -23,7 +26,7 @@ public class UF {
 	//连接节点p和q
 	public void union(int p, int q)
 	{
-		quick_find_union(q,p);
+		weighted_quick_union(q,p);
 	}
 	
 	//寻找节点p所在的连接分量
@@ -32,6 +35,13 @@ public class UF {
 		return id[p];
 	}
 	
+	public int quickUnionFind(int p)
+	{
+		while(p!=id[p]) p = id[p];
+		return p;
+	}
+	
+	//quick_find方法需要的union
 	private void quick_find_union(int q, int p)
 	{
 		int qId = quick_find(q);
@@ -50,6 +60,35 @@ public class UF {
 		}
 		count--;
 	}
+	
+	//普通的quick_union函数
+	private void quick_union(int p, int q)
+	{
+		int pRoot = quickUnionFind(p);
+		int qRoot = quickUnionFind(q);
+		if(pRoot == qRoot)return;
+		id[pRoot] = qRoot;
+		count--;
+	}
+	//j加权的quick_union函数
+	
+	private void weighted_quick_union(int q, int p)
+	{
+		int pRoot = quickUnionFind(p);
+		int qRoot = quickUnionFind(q);
+		if(pRoot == qRoot)return;
+		if(sz[pRoot]>sz[qRoot])
+		{
+			id[qRoot] = id[pRoot];
+			sz[pRoot] += sz[qRoot];
+		}
+		else {
+			id[pRoot] = id[qRoot];
+			sz[qRoot] = sz[pRoot];
+		}
+		count--;
+	}
+	
 	
 	//判断p和q是否是同一个连接
 	public boolean connected(int p, int q)
